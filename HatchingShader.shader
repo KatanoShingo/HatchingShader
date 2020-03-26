@@ -273,69 +273,75 @@ Shader "Custom/HatchingShader"
                 {
                     float3 diffuse = col.rgb * NdotV;
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+                    intensity = floor(intensity * 10.0);
 
-                    if(0.6 < intensity)
+                    switch(intensity)
                     {
-                        col *= fixed4(1, 1, 1, 1);
-                    }
-                    else if(0.5 < intensity && intensity <= 0.6)
-                    {
-                        col *= lerp(hatch0, hatch1, 1 - intensity);
-                    }
-                    else if(0.4 < intensity && intensity <= 0.5)
-                    {
-                        col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                    }
-                    else if(0.3 < intensity && intensity <= 0.4)
-                    {
-                        col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                    }
-                    else if(0.2 < intensity && intensity <= 0.3)
-                    {
-                        col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(0.1 < intensity && intensity <= 0.2)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(intensity <= 0.1)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
-                    }
+                        case 0:
+                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
+                          break;
+
+                        case 1:
+                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 2:
+                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 3:
+                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                          break;
+                          
+                        case 4:
+                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                          break;
+
+                        case 5:
+                          col *= lerp(hatch0, hatch1, 1 - intensity);
+                          break;
+                          
+                        default:
+                          col *= fixed4(1, 1, 1, 1);
+                          break;
+                    }  
                 }
                 else
                 {
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+                    intensity = floor(intensity * 10.0);
 
-                    if(0.6 < intensity)
+                    switch(intensity)
                     {
-                        col *= fixed4(1, 1, 1, 1);
-                    }
-                    else if(0.5 < intensity && intensity <= 0.6)
-                    {
-                        col *= lerp(hatch0, hatch1, 1 - intensity);
-                    }
-                    else if(0.4 < intensity && intensity <= 0.5)
-                    {
-                        col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                    }
-                    else if(0.3 < intensity && intensity <= 0.4)
-                    {
-                        col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                    }
-                    else if(0.2 < intensity && intensity <= 0.3)
-                    {
-                        col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(0.1 < intensity && intensity <= 0.2)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(intensity <= 0.1)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
+                        case 0:
+                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
+                          break;
+                          
+                        case 1:
+                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+                          
+                        case 2:
+                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+                          
+                        case 3:
+                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                          break;
+                          
+                        case 4:
+                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                          break;
+                          
+                        case 5:
+                          col *= lerp(hatch0, hatch1, 1 - intensity);
+                          break;
+                          
+                        default:
+                          col *= fixed4(1, 1, 1, 1);
+                          break;
                     }
                 }
 
@@ -459,34 +465,37 @@ Shader "Custom/HatchingShader"
                 {
                     float3 diffuse = col.rgb * NdotV;
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+                    intensity = floor(intensity * 10.0);
 
-                    if(0.6 < intensity)
+                    switch(intensity)
                     {
-                        col *= fixed4(1, 1, 1, 1);
-                    }
-                    else if(0.5 < intensity && intensity <= 0.6)
-                    {
-                        col *= lerp(hatch0, hatch1, 1 - intensity);
-                    }
-                    else if(0.4 < intensity && intensity <= 0.5)
-                    {
-                        col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                    }
-                    else if(0.3 < intensity && intensity <= 0.4)
-                    {
-                        col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                    }
-                    else if(0.2 < intensity && intensity <= 0.3)
-                    {
-                        col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(0.1 < intensity && intensity <= 0.2)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(intensity <= 0.1)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
+                        case 0:
+                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
+                          break;
+
+                        case 1:
+                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 2:
+                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 3:
+                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                          break;
+
+                        case 4:
+                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                          break;
+
+                        case 5:
+                          col *= lerp(hatch0, hatch1, 1 - intensity);
+                          break;
+                        
+                        default:
+                          col *= fixed4(1, 1, 1, 1);
+                          break;
                     }
                 }
                 else
@@ -494,34 +503,37 @@ Shader "Custom/HatchingShader"
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+                    intensity = floor(intensity * 10.0);
 
-                    if(0.6 < intensity)
+                    switch(intensity)
                     {
-                        col *= fixed4(1, 1, 1, 1);
-                    }
-                    else if(0.5 < intensity && intensity <= 0.6)
-                    {
-                        col *= lerp(hatch0, hatch1, 1 - intensity);
-                    }
-                    else if(0.4 < intensity && intensity <= 0.5)
-                    {
-                        col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                    }
-                    else if(0.3 < intensity && intensity <= 0.4)
-                    {
-                        col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                    }
-                    else if(0.2 < intensity && intensity <= 0.3)
-                    {
-                        col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(0.1 < intensity && intensity <= 0.2)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                    }
-                    else if(intensity <= 0.1)
-                    {
-                        col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
+                        case 0:
+                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
+                          break;
+                          
+                        case 1:
+                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 2:
+                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                          break;
+
+                        case 3:
+                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                          break;
+
+                        case 4:
+                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                          break;
+
+                        case 5:
+                          col *= lerp(hatch0, hatch1, 1 - intensity);
+                          break;
+                        
+                        default:
+                          col *= fixed4(1, 1, 1, 1);
+                          break;
                     }
                 }
 
