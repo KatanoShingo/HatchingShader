@@ -273,9 +273,8 @@ Shader "Custom/HatchingShader"
                 {
                     float3 diffuse = col.rgb * NdotV;
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-                    intensity = floor(intensity * 10.0);
 
-                    switch(intensity)
+                    switch(floor(intensity * 10.0))
                     {
                         case 0:
                           col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
@@ -311,9 +310,8 @@ Shader "Custom/HatchingShader"
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-                    intensity = floor(intensity * 10.0);
 
-                    switch(intensity)
+                    switch(floor(intensity * 10.0))
                     {
                         case 0:
                           col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
@@ -465,9 +463,8 @@ Shader "Custom/HatchingShader"
                 {
                     float3 diffuse = col.rgb * NdotV;
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-                    intensity = floor(intensity * 10.0);
 
-                    switch(intensity)
+                    switch(floor(intensity * 10.0))
                     {
                         case 0:
                           col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
@@ -503,9 +500,8 @@ Shader "Custom/HatchingShader"
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
                     float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-                    intensity = floor(intensity * 10.0);
 
-                    switch(intensity)
+                    switch(floor(intensity * 10.0))
                     {
                         case 0:
                           col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
