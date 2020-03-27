@@ -13,7 +13,6 @@ Shader "Custom/HatchingShader"
         _OutlineMask ("Outline Mask Texture", 2D) = "black" { }
         _OutlineColor ("Outline Color", Color) = (0.2, 0.2, 0.2, 1)
         _OutlineWidth ("Outline Width", Float) = 2
-        [Enum(OFF, 0, ON, 1)] _Hoge2 ("Toggle Billboard", int) = 0
         _Angle ("Angle", Range(0.0, 360.0)) = 0.0
         _Xcomp ("_Xcomp", Range(0.0, 0.99)) = 0.0
         _Ycomp ("_Ycomp", Range(0.0, 0.99)) = 0.0
@@ -92,7 +91,6 @@ Shader "Custom/HatchingShader"
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _OutlineMask; uniform float4 _OutlineMask_ST;
             uniform int _Hoge;
-            uniform int _Hoge2;
             uniform fixed4 _OutlineColor;
             uniform float _RimPower;
             uniform float _RimAmplitude;
@@ -112,7 +110,7 @@ Shader "Custom/HatchingShader"
                 v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
-                o.vertex = lerp(UnityObjectToClipPos(v.vertex), pos, _Hoge2);
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.normal = UnityObjectToWorldNormal(v.normal);
                 o.wpos = mul(unity_ObjectToWorld, v.vertex);
                 UNITY_TRANSFER_FOG(o, o.vertex);
@@ -192,7 +190,6 @@ Shader "Custom/HatchingShader"
             uniform float _Density;
             uniform float _Roughness;
             uniform int _Hoge;
-            uniform int _Hoge2;
             uniform float _Angle;
 
             void ComputeVertexLightColor(inout v2f i)
@@ -214,7 +211,7 @@ Shader "Custom/HatchingShader"
                 v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
-                o.vertex = lerp(UnityObjectToClipPos(v.vertex), pos, _Hoge2);
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.huv = TRANSFORM_TEX(v.uv, _MainTex) * _Roughness;
                 o.normal = UnityObjectToWorldNormal(v.normal);
@@ -402,7 +399,6 @@ Shader "Custom/HatchingShader"
             uniform float _Density;
             uniform float _Roughness;
             uniform int _Hoge;
-            uniform int _Hoge2;
             uniform float _Angle;
             
             v2f vert(appdata v)
@@ -412,7 +408,7 @@ Shader "Custom/HatchingShader"
                 v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
-                o.vertex = lerp(UnityObjectToClipPos(v.vertex), pos, _Hoge2);
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.huv = TRANSFORM_TEX(v.uv, _MainTex) * _Roughness;
                 o.normal = UnityObjectToWorldNormal(v.normal);
