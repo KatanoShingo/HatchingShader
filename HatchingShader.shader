@@ -17,8 +17,6 @@ Shader "Custom/HatchingShader"
         _Xcomp ("_Xcomp", Range(0.0, 0.99)) = 0.0
         _Ycomp ("_Ycomp", Range(0.0, 0.99)) = 0.0
         _Zcomp ("_Zcomp", Range(0.0, 0.99)) = 0.0
-        _RimPower ("Rim Power", Float) = 0.0
-        _RimAmplitude ("Rim Amplitude", Float) = 0.0
         _Threshold ("Threshold", Range(0.0, 1.0)) = 0.5
         _Adjust ("NdotL or NdotV", Range(0.0, 1.0)) = 0.6
         _Density ("Density", Range(0.0, 1.0)) = 0.6
@@ -92,8 +90,6 @@ Shader "Custom/HatchingShader"
             uniform sampler2D _OutlineMask; uniform float4 _OutlineMask_ST;
             uniform int _Hoge;
             uniform fixed4 _OutlineColor;
-            uniform float _RimPower;
-            uniform float _RimAmplitude;
             uniform float _OutlineWidth;
             uniform float _Xcomp;
             uniform float _Ycomp;
@@ -124,14 +120,9 @@ Shader "Custom/HatchingShader"
 
                 float NdotV = max(0, dot(N, V));
                 float NNdotV = 1.01 - dot(N, V);
-                float rim = pow(NNdotV, _RimPower) * _RimAmplitude;
 
                 fixed4 col = _OutlineColor;
                 col.rgb = lerp(col.rgb, dot(col.rgb, half3(0.2326, 0.7152, 0.0722)), _Hoge);
-
-                fixed3 colRim = col.rgb * 1.0 + rim * fixed3(1.0, 1.0, 1.0);
-
-                col.rgb = lerp(col.rgb, colRim, V);
 
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
@@ -183,8 +174,6 @@ Shader "Custom/HatchingShader"
             uniform float _Xcomp;
             uniform float _Ycomp;
             uniform float _Zcomp;
-            uniform float _RimPower;
-            uniform float _RimAmplitude;
             uniform float _Threshold;
             uniform float _Adjust;
             uniform float _Density;
@@ -251,7 +240,6 @@ Shader "Custom/HatchingShader"
 
                 float NdotV = max(0, dot(N, V));
                 float NNdotV = 1.01 - dot(N, V);
-                float rim = pow(NNdotV, _RimPower) * _RimAmplitude;
 
                 float NdotL = max(0, dot(L, N));
                 UNITY_LIGHT_ATTENUATION(attenuation, i, N)
@@ -342,8 +330,6 @@ Shader "Custom/HatchingShader"
 
                 col.rgb = lerp(col.rgb, dot(col.rgb, half3(0.2326, 0.7152, 0.0722)), _Hoge) * _LightColor0.rgb;
 
-                fixed3 colRim = col.rgb * 1.0 + rim * fixed3(1.0, 1.0, 1.0);
-                col.rgb = lerp(col.rgb, colRim, V);
                 col.a = 1;
 
                 UNITY_APPLY_FOG(i.fogCoord, col);
@@ -392,8 +378,6 @@ Shader "Custom/HatchingShader"
             uniform float _Xcomp;
             uniform float _Ycomp;
             uniform float _Zcomp;
-            uniform float _RimPower;
-            uniform float _RimAmplitude;
             uniform float _Threshold;
             uniform float _Adjust;
             uniform float _Density;
@@ -440,7 +424,6 @@ Shader "Custom/HatchingShader"
 
                 float NdotV = max(0, dot(N, V));
                 float NNdotV = 1.01 - dot(N, V);
-                float rim = pow(NNdotV, _RimPower) * _RimAmplitude;
 
                 float NdotL = max(0, dot(L, N));
                 UNITY_LIGHT_ATTENUATION(attenuation, i, N)
@@ -531,8 +514,6 @@ Shader "Custom/HatchingShader"
 
                 col.rgb = lerp(col.rgb, dot(col.rgb, half3(0.2326, 0.7152, 0.0722)), _Hoge) * _LightColor0.rgb;
 
-                fixed3 colRim = col.rgb * 1.0 + rim * fixed3(1.0, 1.0, 1.0);
-                col.rgb = lerp(col.rgb, colRim, V);
                 col.a = 1;
 
                 UNITY_APPLY_FOG(i.fogCoord, col);
