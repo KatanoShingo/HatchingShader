@@ -11,7 +11,7 @@ Shader "Custom/HatchingShader"
         _Hatch4 ("Hatch4", 2D) = "white" { }
         _Hatch5 ("Hatch5", 2D) = "white" { }
         _OutlineMask ("Outline Mask Texture", 2D) = "black" { }
-        _OutlineColor ("Outline Color", Color) = (0, 0, 0, 1)
+        _OutlineColor ("Outline Color", Color) = (0.2, 0.2, 0.2, 1)
         _OutlineWidth ("Outline Width", Float) = 2
         [Enum(OFF, 0, ON, 1)] _Hoge2 ("Toggle Billboard", int) = 0
         _Angle ("Angle", Range(0.0, 360.0)) = 0.0
