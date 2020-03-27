@@ -24,7 +24,7 @@ Shader "Custom/HatchingShader"
         _Adjust ("NdotL or NdotV", Range(0.0, 1.0)) = 0.6
         _Density ("Density", Range(0.0, 1.0)) = 0.6
         _Roughness ("Roughness", Range(0.1, 30)) = 8.0
-        [Enum(OFF, 0, ON, 1)] _Hoge ("Toggle Gray Scale", int) = 0
+        [Enum(OFF, 0, ON, 1)] _Hoge ("Toggle Gray Scale", int) = 1
         [Enum(OFF, 0, FRONT, 1, BACK, 2)] _CullMode ("Cull Mode", int) = 0
     }
     
