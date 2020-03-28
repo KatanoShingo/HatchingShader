@@ -13,7 +13,6 @@ Shader "Custom/HatchingShader"
         _OutlineMask ("Outline Mask Texture", 2D) = "black" { }
         _OutlineColor ("Outline Color", Color) = (0.2, 0.2, 0.2, 1)
         _OutlineWidth ("Outline Width", Float) = 2
-        _Angle ("Angle", Range(0.0, 360.0)) = 0.0
         _Xcomp ("_Xcomp", Range(0.0, 0.99)) = 0.0
         _Ycomp ("_Ycomp", Range(0.0, 0.99)) = 0.0
         _Zcomp ("_Zcomp", Range(0.0, 0.99)) = 0.0
@@ -41,20 +40,6 @@ Shader "Custom/HatchingShader"
         #include "UnityCG.cginc"
         #include "AutoLight.cginc"
         #include "UnityPBSLighting.cginc"
-        
-        float2x2 rotateFnc(float b)
-        {
-            float alpha = b * UNITY_PI / 180.0;
-            float sina, cosa;
-            sincos(alpha, sina, cosa);
-            return float2x2(cosa, -sina, sina, cosa);
-        }
-
-        float4 Rotate(float4 a, float b)
-        {
-            float2x2 m = rotateFnc(b);
-            return float4(mul(m, a.xz), a.yw).xzyw;
-        }
 
         #ifdef USING_STEREO_MATRICES
         static float3 centerCameraPos = 0.5 * (unity_StereoWorldSpaceCameraPos[0] +  unity_StereoWorldSpaceCameraPos[1]);
@@ -94,7 +79,6 @@ Shader "Custom/HatchingShader"
             uniform float _Xcomp;
             uniform float _Ycomp;
             uniform float _Zcomp;
-            uniform float _Angle;
             
             v2f vert(appdata v)
             {
@@ -103,7 +87,6 @@ Shader "Custom/HatchingShader"
                 o.uvM = v.uvM;
                 float3 outlineMask = tex2Dlod(_OutlineMask, float4(TRANSFORM_TEX(o.uvM, _OutlineMask), 0.0, 0)).rgb;
                 v.vertex.xyz += lerp(0, v.normal * (1.0 - outlineMask.rgb) * _OutlineWidth, saturate(_OutlineWidth * 1000));
-                v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
                 o.vertex = UnityObjectToClipPos(v.vertex);
@@ -179,7 +162,6 @@ Shader "Custom/HatchingShader"
             uniform float _Density;
             uniform float _Roughness;
             uniform int _Hoge;
-            uniform float _Angle;
 
             void ComputeVertexLightColor(inout v2f i)
             {
@@ -197,7 +179,6 @@ Shader "Custom/HatchingShader"
             {
                 v2f o = (v2f)0;
                 o.wpos = mul(unity_ObjectToWorld, v.vertex);
-                v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
                 o.vertex = UnityObjectToClipPos(v.vertex);
@@ -383,13 +364,11 @@ Shader "Custom/HatchingShader"
             uniform float _Density;
             uniform float _Roughness;
             uniform int _Hoge;
-            uniform float _Angle;
             
             v2f vert(appdata v)
             {
                 v2f o = (v2f)0;
                 o.wpos = mul(unity_ObjectToWorld, v.vertex);
-                v.vertex = Rotate(v.vertex, _Angle);
                 v.vertex.xyz = v.vertex.xyz * (1 - float3(_Xcomp, _Ycomp, _Zcomp));
                 float4 pos = mul(UNITY_MATRIX_P, mul(UNITY_MATRIX_MV, float4(0, 0, 0, 1)) + float4(v.vertex.x, v.vertex.y, v.vertex.z, 0));
                 o.vertex = UnityObjectToClipPos(v.vertex);
