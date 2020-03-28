@@ -62,3 +62,6 @@ Unity5.6.3p1(64bit)の環境で作成しました。
 
 ### 最後に。  
 コード自体の最適化、効率化は一切おこなっていない上に、[参考にした論文](http://hhoppe.com/hatching.pdf "Real-Time Hatching")通りにテクスチャを二枚にパックすることもしていません。コードの冗長さには目をつむってください。数列とかアルゴリズム考えるのめんどくさかった(´･_･`)
+
+### unitypackage
+https://github.com/KatanoShingo/HatchingShaderVer2/releases/tag/release
