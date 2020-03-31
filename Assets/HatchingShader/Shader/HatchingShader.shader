@@ -181,6 +181,49 @@ Shader "Custom/HatchingShader"
                 return o;
             }
             
+            fixed4 hatch0;
+            fixed4 hatch1;
+            fixed4 hatch2;
+            fixed4 hatch3;
+            fixed4 hatch4;
+            fixed4 hatch5;
+            float NdotV;
+            float NdotL;
+            fixed4 blend(float3 diffuse,float value)
+            {
+                float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+
+                switch(floor(intensity * 10.0))
+                {
+                    case 0:
+                      return lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, value);
+                      break;
+
+                    case 1:
+                      return lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                      break;
+
+                    case 2:
+                      return lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                      break;
+
+                    case 3:
+                      return lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                      break;
+                      
+                    case 4:
+                      return lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                      break;
+
+                    case 5:
+                      return lerp(hatch0, hatch1, 1 - intensity);
+                      break;
+                      
+                    default:
+                      return fixed4(1, 1, 1, 1);
+                      break;
+                }  
+            }
             fixed4 frag(v2f i): SV_Target
             {
                 float3 tangentNormal = float4(UnpackNormal(tex2D(_NormalTex, i.uv)), 1);
@@ -208,94 +251,32 @@ Shader "Custom/HatchingShader"
                 float3 L = lightDir;
                 float3 V = normalize(centerCameraPos.xyz - i.wpos.xyz);
 
-                float NdotV = max(0, dot(N, V));
+                NdotV = max(0, dot(N, V));
                 float NNdotV = 1.01 - dot(N, V);
 
-                float NdotL = max(0, dot(L, N));
+                NdotL = max(0, dot(L, N));
                 UNITY_LIGHT_ATTENUATION(attenuation, i, N)
                 lightCol *= attenuation;
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                fixed4 hatch0 = tex2D(_Hatch0, i.huv);
-                fixed4 hatch1 = tex2D(_Hatch1, i.huv);
-                fixed4 hatch2 = tex2D(_Hatch2, i.huv);
-                fixed4 hatch3 = tex2D(_Hatch3, i.huv);
-                fixed4 hatch4 = tex2D(_Hatch4, i.huv);
-                fixed4 hatch5 = tex2D(_Hatch5, i.huv);
+                hatch0 = tex2D(_Hatch0, i.huv);
+                hatch1 = tex2D(_Hatch1, i.huv);
+                hatch2 = tex2D(_Hatch2, i.huv);
+                hatch3 = tex2D(_Hatch3, i.huv);
+                hatch4 = tex2D(_Hatch4, i.huv);
+                hatch5 = tex2D(_Hatch5, i.huv);
 
                 if (length(lightCol.rgb) < _Threshold)
                 {
                     float3 diffuse = col.rgb * NdotV;
-                    float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-
-                    switch(floor(intensity * 10.0))
-                    {
-                        case 0:
-                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
-                          break;
-
-                        case 1:
-                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 2:
-                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 3:
-                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                          break;
-                          
-                        case 4:
-                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                          break;
-
-                        case 5:
-                          col *= lerp(hatch0, hatch1, 1 - intensity);
-                          break;
-                          
-                        default:
-                          col *= fixed4(1, 1, 1, 1);
-                          break;
-                    }  
+                    col *=blend(diffuse,NdotV * 1.5);
                 }
                 else
                 {
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
-                    float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-
-                    switch(floor(intensity * 10.0))
-                    {
-                        case 0:
-                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
-                          break;
-                          
-                        case 1:
-                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-                          
-                        case 2:
-                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-                          
-                        case 3:
-                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                          break;
-                          
-                        case 4:
-                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                          break;
-                          
-                        case 5:
-                          col *= lerp(hatch0, hatch1, 1 - intensity);
-                          break;
-                          
-                        default:
-                          col *= fixed4(1, 1, 1, 1);
-                          break;
-                    }
+                    col *=blend(diffuse,(1 - NdotL) * 1.5);
                 }
 
                 col.rgb = lerp(col.rgb, dot(col.rgb, half3(0.2326, 0.7152, 0.0722)), _Hoge) * _LightColor0.rgb;
@@ -366,6 +347,50 @@ Shader "Custom/HatchingShader"
                 return o;
             }
             
+            fixed4 hatch0;
+            fixed4 hatch1;
+            fixed4 hatch2;
+            fixed4 hatch3;
+            fixed4 hatch4;
+            fixed4 hatch5;
+            float NdotV;
+            float NdotL;
+            fixed4 blend(float3 diffuse,float value)
+            {
+                float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
+
+                switch(floor(intensity * 10.0))
+                {
+                    case 0:
+                      return lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, value);
+                      break;
+
+                    case 1:
+                      return lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
+                      break;
+
+                    case 2:
+                      return lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
+                      break;
+
+                    case 3:
+                      return lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
+                      break;
+                      
+                    case 4:
+                      return lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
+                      break;
+
+                    case 5:
+                      return lerp(hatch0, hatch1, 1 - intensity);
+                      break;
+                      
+                    default:
+                      return fixed4(1, 1, 1, 1);
+                      break;
+                }  
+            }
+
             fixed4 frag(v2f i): SV_Target
             {
                 float3 tangentNormal = float4(UnpackNormal(tex2D(_NormalTex, i.uv)), 1);
@@ -386,94 +411,32 @@ Shader "Custom/HatchingShader"
                 lightCol.rgb += max(0, ShadeSH9(float4(N, 1)));
                 float3 L = lightDir;
 
-                float NdotV = max(0, dot(N, V));
+                NdotV = max(0, dot(N, V));
                 float NNdotV = 1.01 - dot(N, V);
 
-                float NdotL = max(0, dot(L, N));
+                NdotL = max(0, dot(L, N));
                 UNITY_LIGHT_ATTENUATION(attenuation, i, N)
                 lightCol *= attenuation;
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                fixed4 hatch0 = tex2D(_Hatch0, i.huv);
-                fixed4 hatch1 = tex2D(_Hatch1, i.huv);
-                fixed4 hatch2 = tex2D(_Hatch2, i.huv);
-                fixed4 hatch3 = tex2D(_Hatch3, i.huv);
-                fixed4 hatch4 = tex2D(_Hatch4, i.huv);
-                fixed4 hatch5 = tex2D(_Hatch5, i.huv);
+                hatch0 = tex2D(_Hatch0, i.huv);
+                hatch1 = tex2D(_Hatch1, i.huv);
+                hatch2 = tex2D(_Hatch2, i.huv);
+                hatch3 = tex2D(_Hatch3, i.huv);
+                hatch4 = tex2D(_Hatch4, i.huv);
+                hatch5 = tex2D(_Hatch5, i.huv);
 
                 if (length(lightCol.rgb) < _Threshold)
                 {
                     float3 diffuse = col.rgb * NdotV;
-                    float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-
-                    switch(floor(intensity * 10.0))
-                    {
-                        case 0:
-                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, NdotV * 1.5);
-                          break;
-
-                        case 1:
-                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 2:
-                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 3:
-                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                          break;
-
-                        case 4:
-                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                          break;
-
-                        case 5:
-                          col *= lerp(hatch0, hatch1, 1 - intensity);
-                          break;
-                        
-                        default:
-                          col *= fixed4(1, 1, 1, 1);
-                          break;
-                    }
+                    col *=blend(diffuse,NdotV * 1.5);
                 }
                 else
                 {
                     float manipulate = lerp(NdotL, NdotV, _Adjust);
                     float3 diffuse = lerp(col.rgb * manipulate, lightCol, 1.0 / pow(3, length(lightCol)));
-                    float intensity = lerp(saturate(length(diffuse)), 0.5 * saturate(dot(diffuse, half3(0.2326, 0.7152, 0.0722))), _Density);
-
-                    switch(floor(intensity * 10.0))
-                    {
-                        case 0:
-                          col *= lerp(lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity), hatch5 * 0.5, (1 - NdotL) * 1.5);
-                          break;
-                          
-                        case 1:
-                          col *= lerp(lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 2:
-                          col *= lerp(lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity), hatch4, 1 - intensity);
-                          break;
-
-                        case 3:
-                          col *= lerp(lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity), hatch3, 1 - intensity);
-                          break;
-
-                        case 4:
-                          col *= lerp(lerp(hatch0, hatch1, 1 - intensity), hatch2, 1 - intensity);
-                          break;
-
-                        case 5:
-                          col *= lerp(hatch0, hatch1, 1 - intensity);
-                          break;
-                        
-                        default:
-                          col *= fixed4(1, 1, 1, 1);
-                          break;
-                    }
+                    col *=blend(diffuse,(1 - NdotL) * 1.5);
                 }
 
                 col.rgb = lerp(col.rgb, dot(col.rgb, half3(0.2326, 0.7152, 0.0722)), _Hoge) * _LightColor0.rgb;
